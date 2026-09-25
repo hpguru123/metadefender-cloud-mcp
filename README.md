@@ -18,7 +18,15 @@ An MCP server that lets Claude use the [OPSWAT MetaDefender Cloud](https://metad
 
 Results are summarized by default (verdict, detecting engines, flagged sources) to keep Claude's context small. Pass `raw: true` for the full API response.
 
-## Setup
+## Install in Claude Desktop (one click)
+
+1. Download [`metadefender-cloud.mcpb`](metadefender-cloud.mcpb) from this repo.
+2. Double-click it, or drag it into Claude Desktop under Settings → Extensions.
+3. Paste your API key from https://metadefender.opswat.com/account when asked. Claude Desktop keeps it in your OS keychain.
+
+To rebuild the extension after changing the code: `npm run build:extension`.
+
+## Setup from source
 
 ```bash
 npm install

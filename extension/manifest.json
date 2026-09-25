@@ -1,0 +1,44 @@
+{
+  "manifest_version": "0.3",
+  "name": "metadefender-cloud",
+  "display_name": "MetaDefender Cloud",
+  "version": "0.1.0",
+  "description": "Scan files, look up hashes, and check IP, domain, URL and CVE reputation with OPSWAT MetaDefender Cloud.",
+  "long_description": "Uses your MetaDefender Cloud API key to multiscan files with 20+ engines, run Deep CDR sanitization and sandbox analysis, look up file hashes, and check IP, domain, URL and CVE reputation. Files uploaded for scanning are shared with OPSWAT unless private scanning is used (paid plans).",
+  "author": { "name": "Derek" },
+  "repository": { "type": "git", "url": "https://github.com/hpguru123/metadefender-cloud-mcp" },
+  "license": "MIT",
+  "keywords": ["security", "malware", "opswat", "metadefender", "threat-intelligence"],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": { "METADEFENDER_API_KEY": "${user_config.api_key}" }
+    }
+  },
+  "tools": [
+    { "name": "lookup_hash", "description": "Multiscan verdict for an MD5, SHA1 or SHA256 hash" },
+    { "name": "lookup_hashes_bulk", "description": "Look up to 1000 hashes at once" },
+    { "name": "scan_file", "description": "Upload a local file for multiscanning, with optional Deep CDR, sandbox or archive extraction" },
+    { "name": "get_scan_result", "description": "Get a file scan result by data_id" },
+    { "name": "get_sanitized_file", "description": "Get the Deep CDR sanitized file download link" },
+    { "name": "get_sandbox_report", "description": "Get dynamic analysis results by sandbox_id or hash" },
+    { "name": "lookup_ip", "description": "IP reputation" },
+    { "name": "lookup_domain", "description": "Domain reputation" },
+    { "name": "lookup_url", "description": "URL reputation" },
+    { "name": "lookup_cve", "description": "CVE details" },
+    { "name": "get_api_usage", "description": "API key plan and remaining daily limits" }
+  ],
+  "compatibility": { "platforms": ["darwin", "win32", "linux"], "runtimes": { "node": ">=18.0.0" } },
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "MetaDefender Cloud API key",
+      "description": "Find it at https://metadefender.opswat.com/account",
+      "sensitive": true,
+      "required": true
+    }
+  }
+}

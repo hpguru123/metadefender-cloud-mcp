@@ -47,7 +47,7 @@ before(async () => {
   await new Promise((r) => mock.listen(0, r));
   client = new Client({ name: "test", version: "0" });
   await client.connect(new StdioClientTransport({
-    command: "node", args: ["dist/index.js"],
+    command: "node", args: [process.env.SERVER_ENTRY ?? "dist/index.js"],
     env: { ...process.env, METADEFENDER_API_KEY: "test-key", METADEFENDER_BASE_URL: `http://127.0.0.1:${mock.address().port}/v4` },
   }));
 });
