@@ -1,0 +1,27 @@
+{
+  "name": "metadefender-cloud-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for the OPSWAT MetaDefender Cloud API",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "typescript": "^7.0.2"
+  },
+  "type": "module",
+  "bin": {
+    "metadefender-cloud-mcp": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
