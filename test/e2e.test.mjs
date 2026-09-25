@@ -36,8 +36,11 @@ const mock = http.createServer((req, res) => {
     if (u === "/v4/ip/1.2.3.4") return send(200, { address: "1.2.3.4", lookup_results: { detected_by: 1, sources: [
       { provider: "webroot", assessment: "Phishing" }, { provider: "x", assessment: "trustworthy" }] } });
     if (u === "/v4/url/" + encodeURIComponent("http://evil.test/a?b=c")) return send(200, { address: "http://evil.test/a?b=c", lookup_results: { detected_by: 0, sources: [] } });
-    if (u === "/v4/apikey/") return send(200, { apikey: "test-key", paid_user: 1 });
-    if (u === "/v4/apikey/limits/status") return send(200, { limit_prevention: 1000 });
+    if (u === "/v4/apikey/") return send(200, {
+      apikey: "test-key", portal_api_key: "portal-secret", user_id: "u-123", account_id: "acc-9", nickname: "derek",
+      email: "d@example.com", paid_user: 0, limit_interval: "daily", limit_reputation: 1000, max_upload_file_size: 140,
+      limit_extra: { nested: "portal-secret" }, some_future_field: "leaky" });
+    if (u === "/v4/apikey/limits/status") return send(200, { limit_prevention: 1000, reset_in: "5h", user_id: "u-123" });
     send(404, { error: { messages: ["no route " + u] } });
   });
 });
@@ -102,8 +105,11 @@ test("url is path-encoded", async () => {
   assert.equal(r.isError, undefined);
 });
 
-test("api usage never echoes the key", async () => {
+test("api usage returns only allowlisted plan and limit fields", async () => {
   const r = await call("get_api_usage");
-  assert.equal(r.text.includes("test-key"), false);
-  assert.equal(r.json.limits.limit_prevention, 1000);
+  for (const secret of ["test-key", "portal-secret", "u-123", "acc-9", "derek", "d@example.com", "leaky"]) {
+    assert.equal(r.text.includes(secret), false, `leaked ${secret}`);
+  }
+  assert.deepEqual(r.json.plan, { paid_user: 0, limit_interval: "daily", limit_reputation: 1000, max_upload_file_size: 140 });
+  assert.deepEqual(r.json.limits, { limit_prevention: 1000, reset_in: "5h" });
 });

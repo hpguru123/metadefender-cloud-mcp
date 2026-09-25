@@ -50,3 +50,42 @@ export function summarizeReputation(r: any) {
       : undefined,
   };
 }
+
+// The /apikey responses mix plan details with account identifiers and a portal key.
+// Only fields known to be safe are passed through, so fields MetaDefender adds later
+// stay out of the conversation by default.
+const SAFE_PLAN_FIELDS = new Set([
+  "paid_user",
+  "license_type",
+  "plan",
+  "plan_name",
+  "limit_interval",
+  "qos_scan",
+  "expiration_date",
+  "max_upload_file_size",
+  "max_archive_file_size",
+  "max_archive_file_number",
+  "max_archive_recursion_level",
+  "max_file_size",
+  "sandbox_enabled",
+  "private_processing",
+]);
+
+const isPlainValue = (v: unknown) => typeof v === "number" || typeof v === "boolean" || typeof v === "string";
+
+function pickSafe(obj: any, allow: (key: string, value: unknown) => boolean) {
+  const out: Record<string, unknown> = {};
+  if (!obj || typeof obj !== "object") return out;
+  for (const [k, v] of Object.entries(obj)) {
+    if (isPlainValue(v) && allow(k, v)) out[k] = v;
+  }
+  return out;
+}
+
+export function summarizeApiUsage(info: any, limits: any) {
+  const isLimit = (k: string, v: unknown) => /^(limit|max)_/.test(k) && typeof v === "number";
+  return {
+    plan: pickSafe(info, (k, v) => SAFE_PLAN_FIELDS.has(k) || isLimit(k, v)),
+    limits: pickSafe(limits, (k, v) => isLimit(k, v) || k === "reset_in" || k === "time_interval"),
+  };
+}

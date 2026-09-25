@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "metadefender-cloud",
   "display_name": "MetaDefender Cloud",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scan files, look up hashes, and check IP, domain, URL and CVE reputation with OPSWAT MetaDefender Cloud.",
   "long_description": "Uses your MetaDefender Cloud API key to multiscan files with 20+ engines, run Deep CDR sanitization and sandbox analysis, look up file hashes, and check IP, domain, URL and CVE reputation. Files uploaded for scanning are shared with OPSWAT unless private scanning is used (paid plans).",
   "author": { "name": "Derek" },

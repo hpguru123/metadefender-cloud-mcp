@@ -3,7 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { MetaDefenderClient } from "./client.js";
-import { summarizeReputation, summarizeScan } from "./summarize.js";
+import { summarizeApiUsage, summarizeReputation, summarizeScan } from "./summarize.js";
 
 const apiKey = process.env.METADEFENDER_API_KEY;
 if (!apiKey) {
@@ -12,7 +12,7 @@ if (!apiKey) {
 }
 
 const client = new MetaDefenderClient({ apiKey, baseUrl: process.env.METADEFENDER_BASE_URL });
-const server = new McpServer({ name: "metadefender-cloud", version: "0.1.0" });
+const server = new McpServer({ name: "metadefender-cloud", version: "0.1.1" });
 
 const rawFlag = z.boolean().optional().describe("Return the full API response instead of a summary");
 
@@ -189,15 +189,13 @@ server.registerTool(
   "get_api_usage",
   {
     title: "Get API key usage and limits",
-    description: "Show the API key's plan, remaining daily limits for each API type, and reset time.",
+    description: "Show the API key's plan details and daily limits for each API type.",
     inputSchema: {},
     annotations: { readOnlyHint: true, openWorldHint: true },
   },
   tool(async () => {
     const [info, limits] = await Promise.all([client.getApiKeyInfo(), client.getApiKeyLimits()]);
-    // Never echo the key itself back into the conversation.
-    const { apikey: _omit, ...safeInfo } = info ?? {};
-    return { info: safeInfo, limits };
+    return summarizeApiUsage(info, limits);
   }),
 );
 
